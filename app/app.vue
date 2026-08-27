@@ -11,7 +11,7 @@ function toggleTheme() {
     <div class="pointer-events-none fixed inset-0 z-0">
       <div class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[length:64px_64px] dark:bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)]" />
       <div class="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary-500/10 blur-[128px]" />
-      <div class="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-sky-500/10 blur-[128px]" />
+      <div class="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary-500/10 blur-[128px]" />
     </div>
 
     <a
@@ -79,16 +79,16 @@ function toggleTheme() {
 }
 
 ::selection {
-  background-color: rgba(59, 130, 246, 0.25);
+  background-color: rgba(48, 105, 201, 0.25);
   color: inherit;
 }
 
 .dark ::selection {
-  background-color: rgba(59, 130, 246, 0.35);
+  background-color: rgba(48, 105, 201, 0.35);
 }
 
 *:focus-visible {
-  outline: 2px solid rgb(59 130 246);
+  outline: 2px solid rgb(48 105 201);
   outline-offset: 2px;
   border-radius: 4px;
 }
