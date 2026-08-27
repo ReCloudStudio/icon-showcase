@@ -4,9 +4,6 @@
   "main": ".output/server/index.mjs",
   "compatibility_date": "2026-08-04",
   "compatibility_flags": ["nodejs_compat"],
-  "build": {
-    "command": "bun run build"
-  },
   "assets": {
     "directory": ".output/public",
     "binding": "ASSETS"

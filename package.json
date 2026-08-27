@@ -8,7 +8,7 @@
     "preview": "nuxt preview",
     "lint": "eslint .",
     "sync": "bun run scripts/sync.mjs",
-    "deploy": "wrangler deploy"
+    "deploy": "nuxt build && wrangler deploy"
   },
   "dependencies": {
     "@nuxt/ui": "^2.21.0",
