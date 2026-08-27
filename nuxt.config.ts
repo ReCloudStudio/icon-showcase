@@ -28,7 +28,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
-    preset: 'cloudflare-module',
+    preset: 'cloudflare_pages',
   },
   devServer: {
     host: '0.0.0.0',
