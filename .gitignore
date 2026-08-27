@@ -1,0 +1,13 @@
+node_modules
+.output
+.nuxt
+.data
+.vercel
+.wrangler
+dist
+*.log
+.env
+.env.*
+.dev.vars
+.DS_Store
+.direnv/

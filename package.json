@@ -1,0 +1,25 @@
+{
+  "name": "recloud-icon-showcase",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "lint": "eslint .",
+    "sync": "bun run scripts/sync.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@nuxt/ui": "^2.21.0",
+    "nuxt": "^4.4.8"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.16.0",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.4",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.103.0"
+  }
+}
