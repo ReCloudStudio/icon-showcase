@@ -5,11 +5,11 @@
   "packageManager": "bun@1.3.3",
   "scripts": {
     "dev": "nuxt dev",
-    "build": "nuxt build",
+    "build": "bun install && nuxt build",
     "preview": "nuxt preview",
     "lint": "eslint .",
     "sync": "bun run scripts/sync.mjs",
-    "deploy": "wrangler pages deploy .output/public"
+    "deploy": "wrangler pages deploy dist"
   },
   "dependencies": {
     "@nuxt/ui": "^2.21.0",

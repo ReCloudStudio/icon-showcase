@@ -23,13 +23,13 @@ Nuxt 4 画廊式站点，展示 ReCloud Studio 品牌图标（SVG 与多尺寸 P
 - `bun install`：安装依赖。
 - `bun run dev`：本地开发 http://localhost:3000。
 - `bun run sync`：从上游 `ReCloudStudio/icon` 同步图标资产。
-- `bun run build`：构建，产物在 `dist/`。
+- `bun run build`：先 `bun install` 再 `nuxt build`，产物在 `dist/`。
 - `bun run deploy`：直接上传（`wrangler pages deploy dist`）。
 
 ## 部署（Cloudflare Pages）
 
 - 本仓库已连接 Cloudflare Pages 的 GitHub 自动构建。
-- 后台构建设置：**Build command** `bun run build`、`**Output directory** `dist`、**Package manager** bun（由 `package.json` 的 `packageManager` 自动识别，避免 npm 的 `edgesOut`）。
+- 后台构建设置：**Build command** `bun run build`（内含 `bun install`，否则 `nuxt` 找不到）、**Output directory** `dist`、**Package manager** bun（由 `package.json` 的 `packageManager` 自动识别，避免 npm 的 `edgesOut`）。
 - 自定义域 `icon.worldexecute.me` 在 Pages 后台 Custom domains 绑定。
 - 构建在 Cloudflare 构建镜像进行，推送即触发部署。
 
