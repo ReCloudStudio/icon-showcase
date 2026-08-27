@@ -6,7 +6,7 @@ ReCloud 品牌图标的展示网站，画廊式预览多尺寸图标与 SVG 用�
 
 - [Nuxt 4](https://nuxt.com/) + [@nuxt/ui v2](https://ui.nuxt.com/)（Tailwind v3）
 - 明暗主题（`@nuxtjs/color-mode`），强调色 `blue`，背景 `zinc`
-- 部署目标：Cloudflare Pages（`cloudflare-module` preset）
+- 部署目标：Cloudflare Pages（`cloudflare_pages` preset）
 
 ## 同步图标
 
@@ -25,7 +25,7 @@ bun run sync        # 下载 icon.svg、icon-text*.svg 与各尺寸 PNG 到 publ
 ```bash
 bun install
 bun run dev         # http://localhost:3000
-bun run build       # 产出 .output/
+bun run build       # 产出 dist/
 ```
 
 ## 部署
@@ -37,11 +37,15 @@ bun run deploy      # 推送到 Cloudflare Pages，自定义域 icon.worldexecut
 
 ## 目录结构
 
-- `pages/index.vue`：主画廊（背景切换、尺寸卡片、SVG 下载/复制）
-- `app.vue`：页面壳层（页眉主题切换、页脚）
-- `assets/css/main.css`：Tailwind 指令与棋盘格背景工具类
+采用 Nuxt 4 标准布局（`app/` 为源码根目录）：
+
+- `app/app.vue`：页面壳层（页眉主题切换、页脚）
+- `app/pages/index.vue`：主画廊（背景切换、尺寸卡片、SVG 下载/复制）
+- `app/assets/css/main.css`：Tailwind 指令与棋盘格背景工具类
+- `public/brand/`：同步而来的图标资源（构建时不被打包）
 - `scripts/sync.mjs`：从上游仓库同步图标资源
 - `wrangler.jsonc` / `nuxt.config.ts`：部署与站点配置
+- `app.config.ts` / `tailwind.config.ts`：UI 主题与样式配置（项目根）
 
 ## 使用规范
 
