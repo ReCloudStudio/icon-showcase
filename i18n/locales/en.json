@@ -1,0 +1,33 @@
+{
+  "common": {
+    "skipToContent": "Skip to content",
+    "switchToLight": "Switch to light",
+    "switchToDark": "Switch to dark",
+    "rights": "All rights reserved.",
+    "close": "Close",
+    "download": "Download",
+    "copied": "Copied",
+    "language": "Language"
+  },
+  "meta": {
+    "title": "{name} — Icons"
+  },
+  "home": {
+    "heading": "Icons",
+    "description": "Brand icons of this site: vector SVG and multi-size PNG downloads.",
+    "empty": "No brands in this group yet."
+  },
+  "drawer": {
+    "bgChecker": "Transparent",
+    "bgLight": "Light",
+    "bgDark": "Dark",
+    "snippetComment": "<!-- {name} icon -->",
+    "preview": "Preview",
+    "sizes": "Sizes",
+    "vectorSvg": "Vector SVG",
+    "downloadSvg": "Download SVG",
+    "copySnippet": "Copy usage code",
+    "lockups": "Wordmark lockups",
+    "extras": "Other assets"
+  }
+}

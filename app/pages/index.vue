@@ -3,7 +3,12 @@ import type { Brand } from '~~/shared/schema'
 import { publicUrl } from '~~/shared/assets'
 
 const siteConfig = useSiteConfig()
+const { t, te } = useI18n()
 const { groups } = useIcons()
+
+const description = computed(() =>
+  te('home.description') ? t('home.description') : siteConfig.description,
+)
 
 const groupIds = Object.keys(groups)
 const activeGroupId = ref(
@@ -37,8 +42,8 @@ function selectBrand(brand: Brand) {
 <template>
   <UContainer class="py-12">
     <div class="mb-8 text-center">
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ siteConfig.name }} 图标库</h1>
-      <p class="mt-3 text-zinc-500 dark:text-zinc-400">{{ siteConfig.description }}</p>
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ siteConfig.name }} {{ t('home.heading') }}</h1>
+      <p class="mt-3 text-zinc-500 dark:text-zinc-400">{{ description }}</p>
     </div>
 
     <div class="mb-8 flex flex-wrap gap-1 border-b border-zinc-200 dark:border-zinc-800">
@@ -80,7 +85,7 @@ function selectBrand(brand: Brand) {
     <div v-if="activeGroup.brands.length" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       <BrandCard v-for="b in activeGroup.brands" :key="b.id" :brand="b" @select="selectBrand" />
     </div>
-    <p v-else class="py-16 text-center text-sm text-zinc-500">该分组暂无品牌。</p>
+    <p v-else class="py-16 text-center text-sm text-zinc-500">{{ t('home.empty') }}</p>
 
     <BrandDrawer v-model="drawerOpen" :brand="selected" />
   </UContainer>

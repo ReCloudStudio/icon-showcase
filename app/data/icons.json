@@ -12,24 +12,24 @@
           "repo": "ReCloudStudio/icon",
           "tagline": "品牌主图标与横排字标",
           "icon": {
-            "source": "icon.svg",
+            "source": "projects/recloud/icon.svg",
             "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
-            "sizeSource": "output/icon-{size}.png"
+            "sizeSource": "output/recloud/icon-{size}.png"
           },
           "lockups": [
             {
               "id": "icon-text",
               "name": "ReCloud",
-              "source": "icon-text.svg",
+              "source": "projects/recloud/icon-text.svg",
               "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
-              "sizeSource": "output/icon-text-{size}.png"
+              "sizeSource": "output/recloud/icon-text-{size}.png"
             },
             {
               "id": "icon-text-studio",
               "name": "ReCloud Studio",
-              "source": "icon-text-studio.svg",
+              "source": "projects/recloud/icon-text-studio.svg",
               "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
-              "sizeSource": "output/icon-text-studio-{size}.png"
+              "sizeSource": "output/recloud/icon-text-studio-{size}.png"
             }
           ],
           "extras": []
@@ -37,16 +37,15 @@
         {
           "id": "webhooker",
           "name": "WebHooker",
-          "repo": "ReCloudStudio/WebHooker",
+          "repo": "ReCloudStudio/icon",
           "tagline": "Webhook 分发服务",
           "icon": {
-            "source": "public/logo.svg",
-            "sizes": []
+            "source": "projects/webhooker/icon.svg",
+            "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+            "sizeSource": "output/webhooker/icon-{size}.png"
           },
           "lockups": [],
-          "extras": [
-            { "id": "favicon", "name": "Favicon", "source": "public/favicon.svg" }
-          ]
+          "extras": []
         }
       ]
     }

@@ -3,8 +3,27 @@ import { ACCENT_COLORS } from '~~/shared/accents'
 
 const colorMode = useColorMode()
 const siteConfig = useSiteConfig()
+const { t, te, locale, setLocale } = useI18n()
 
 const siteAccentColor = computed(() => ACCENT_COLORS[siteConfig.accent])
+
+const localeOptions = [
+  { label: '中文', value: 'zh' },
+  { label: 'English', value: 'en' },
+]
+
+const description = computed(() =>
+  te('home.description') ? t('home.description') : siteConfig.description,
+)
+
+useHead(() => ({
+  title: t('meta.title', { name: siteConfig.name }),
+  meta: [
+    { name: 'description', content: description.value },
+    { property: 'og:title', content: t('meta.title', { name: siteConfig.name }) },
+    { property: 'og:description', content: description.value },
+  ],
+}))
 
 function toggleTheme() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
@@ -26,7 +45,7 @@ function toggleTheme() {
       href="#main"
       class="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:left-4 focus:top-4 focus:rounded-full focus:bg-primary-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
     >
-      跳到主内容
+      {{ t('common.skipToContent') }}
     </a>
 
     <header class="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-6">
@@ -36,11 +55,28 @@ function toggleTheme() {
         </div>
         <span class="text-lg font-bold tracking-tight">{{ siteConfig.name }}</span>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <USelect
+          :model-value="locale"
+          :options="localeOptions"
+          :aria-label="t('common.language')"
+          icon="i-heroicons-language"
+          size="sm"
+          variant="none"
+          class="w-28"
+          :ui="{
+            rounded: 'rounded-full',
+            base: 'rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800',
+            padding: { sm: 'px-2.5 py-1.5' },
+            gap: { sm: 'gap-x-1' },
+            icon: { base: 'text-zinc-500 dark:text-zinc-400' },
+          }"
+          @update:model-value="setLocale"
+        />
         <button
           class="rounded-full p-2 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-800"
-          :aria-label="colorMode.value === 'dark' ? '切换到浅色' : '切换到深色'"
-          :title="colorMode.value === 'dark' ? '切换到浅色' : '切换到深色'"
+          :aria-label="colorMode.value === 'dark' ? t('common.switchToLight') : t('common.switchToDark')"
+          :title="colorMode.value === 'dark' ? t('common.switchToLight') : t('common.switchToDark')"
           @click="toggleTheme"
         >
           <svg v-if="colorMode.value === 'dark'" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -59,7 +95,7 @@ function toggleTheme() {
 
     <footer class="relative z-10 border-t border-zinc-200 px-6 py-12 dark:border-zinc-900">
       <div class="mx-auto flex max-w-6xl flex-col items-center gap-4 text-xs text-zinc-500 dark:text-zinc-700 sm:flex-row sm:justify-between">
-        <div>&copy; {{ new Date().getFullYear() }} {{ siteConfig.footer }}. 保留所有权利。</div>
+        <div>&copy; {{ new Date().getFullYear() }} {{ siteConfig.footer }}. {{ t('common.rights') }}</div>
         <a
           :href="siteConfig.github"
           target="_blank"

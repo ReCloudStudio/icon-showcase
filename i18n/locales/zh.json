@@ -1,0 +1,32 @@
+{
+  "common": {
+    "skipToContent": "跳到主内容",
+    "switchToLight": "切换到浅色",
+    "switchToDark": "切换到深色",
+    "rights": "保留所有权利。",
+    "close": "关闭",
+    "download": "下载",
+    "copied": "已复制",
+    "language": "语言"
+  },
+  "meta": {
+    "title": "{name} — 图标库"
+  },
+  "home": {
+    "heading": "图标库",
+    "empty": "该分组暂无品牌。"
+  },
+  "drawer": {
+    "bgChecker": "透明",
+    "bgLight": "浅色",
+    "bgDark": "深色",
+    "snippetComment": "<!-- {name} 图标 -->",
+    "preview": "预览",
+    "sizes": "尺寸",
+    "vectorSvg": "矢量 SVG",
+    "downloadSvg": "下载 SVG",
+    "copySnippet": "复制使用代码",
+    "lockups": "带文字图标",
+    "extras": "其他资源"
+  }
+}

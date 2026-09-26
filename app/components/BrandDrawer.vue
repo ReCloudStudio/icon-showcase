@@ -7,15 +7,19 @@ const props = defineProps<{ brand: Brand | null }>()
 const open = defineModel<boolean>({ default: false })
 
 const siteConfig = useSiteConfig()
+const { t } = useI18n()
 const { mode, bgClass } = useBackground()
 const { download } = useDownload()
 
 const accentColor = computed(() => ACCENT_COLORS[props.brand?.accent ?? siteConfig.accent])
-const bgOptions = [
-  { key: 'checker', label: '透明' },
-  { key: 'light', label: '浅色' },
-  { key: 'dark', label: '深色' },
-] as const
+const bgOptions = computed(
+  () =>
+    [
+      { key: 'checker', label: t('drawer.bgChecker') },
+      { key: 'light', label: t('drawer.bgLight') },
+      { key: 'dark', label: t('drawer.bgDark') },
+    ] as const,
+)
 
 function iconUrl(size?: number) {
   const b = props.brand
@@ -36,7 +40,7 @@ const snippet = computed(() => {
   if (!b) return ''
   const svg = iconUrl()
   const png = b.icon.sizes.includes(256) ? iconUrl(256) : svg
-  return `<!-- ${b.name} 图标 -->
+  return `<!-- ${t('drawer.snippetComment', { name: b.name })} -->
 <picture>
   <source srcset="${svg}" type="image/svg+xml" />
   <img src="${png}" alt="${b.name}" width="256" height="256" />
@@ -88,7 +92,7 @@ async function copySnippet() {
         <button
           type="button"
           class="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-200 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white"
-          aria-label="关闭"
+          :aria-label="t('common.close')"
           @click="open = false"
         >
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -104,7 +108,7 @@ async function copySnippet() {
 
         <section>
           <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400">预览</h3>
+            <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ t('drawer.preview') }}</h3>
             <UButtonGroup size="xs">
               <UButton
                 v-for="option in bgOptions"
@@ -122,7 +126,7 @@ async function copySnippet() {
         </section>
 
         <section v-if="brand.icon.sizes.length">
-          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">尺寸</h3>
+          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ t('drawer.sizes') }}</h3>
           <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div
               v-for="s in brand.icon.sizes"
@@ -145,7 +149,7 @@ async function copySnippet() {
                   class="text-xs text-primary-500 hover:underline"
                   @click="download(iconUrl(s), `icon-${s}.png`)"
                 >
-                  下载
+                  {{ t('common.download') }}
                 </button>
               </div>
             </div>
@@ -153,14 +157,14 @@ async function copySnippet() {
         </section>
 
         <section>
-          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">矢量 SVG</h3>
+          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ t('drawer.vectorSvg') }}</h3>
           <div class="flex flex-col gap-3">
             <div class="flex gap-2">
               <UButton variant="soft" size="xs" @click="download(iconUrl(), fileName(iconUrl(), 'icon'))">
-                下载 SVG
+                {{ t('drawer.downloadSvg') }}
               </UButton>
               <UButton variant="ghost" size="xs" @click="copySnippet">
-                {{ copied ? '已复制' : '复制使用代码' }}
+                {{ copied ? t('common.copied') : t('drawer.copySnippet') }}
               </UButton>
             </div>
             <pre
@@ -170,7 +174,7 @@ async function copySnippet() {
         </section>
 
         <section v-if="brand.lockups.length">
-          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">带文字图标</h3>
+          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ t('drawer.lockups') }}</h3>
           <div class="space-y-3">
             <div
               v-for="l in brand.lockups"
@@ -187,7 +191,7 @@ async function copySnippet() {
                   class="text-xs text-primary-500 hover:underline"
                   @click="download(lockupUrl(l), fileName(lockupUrl(l), l.id))"
                 >
-                  下载
+                  {{ t('common.download') }}
                 </button>
               </div>
             </div>
@@ -195,7 +199,7 @@ async function copySnippet() {
         </section>
 
         <section v-if="brand.extras.length">
-          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">其他资源</h3>
+          <h3 class="mb-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ t('drawer.extras') }}</h3>
           <div class="grid grid-cols-2 gap-3">
             <div
               v-for="e in brand.extras"
@@ -212,7 +216,7 @@ async function copySnippet() {
                   class="text-xs text-primary-500 hover:underline"
                   @click="download(extraUrl(e), fileName(extraUrl(e), e.id))"
                 >
-                  下载
+                  {{ t('common.download') }}
                 </button>
               </div>
             </div>
