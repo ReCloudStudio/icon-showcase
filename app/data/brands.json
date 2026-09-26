@@ -1,0 +1,47 @@
+{
+  "brands": [
+    {
+      "id": "recloud-studio",
+      "name": "ReCloud Studio",
+      "tagline": "品牌主图标与横排字标",
+      "repo": { "owner": "ReCloudStudio", "name": "icon", "branch": "main" },
+      "icon": {
+        "source": "icon.svg",
+        "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+        "sizeSource": "output/icon-{size}.png"
+      },
+      "lockups": [
+        {
+          "id": "icon-text",
+          "name": "ReCloud",
+          "source": "icon-text.svg",
+          "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+          "sizeSource": "output/icon-text-{size}.png"
+        },
+        {
+          "id": "icon-text-studio",
+          "name": "ReCloud Studio",
+          "source": "icon-text-studio.svg",
+          "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+          "sizeSource": "output/icon-text-studio-{size}.png"
+        }
+      ],
+      "extras": []
+    },
+    {
+      "id": "webhooker",
+      "name": "WebHooker",
+      "tagline": "Webhook 分发服务",
+      "repo": { "owner": "ReCloudStudio", "name": "WebHooker", "branch": "main" },
+      "icon": {
+        "source": "public/logo.svg",
+        "sizes": [],
+        "sizeSource": null
+      },
+      "lockups": [],
+      "extras": [
+        { "id": "favicon", "name": "Favicon", "source": "public/favicon.svg" }
+      ]
+    }
+  ]
+}

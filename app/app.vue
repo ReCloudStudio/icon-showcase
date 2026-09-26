@@ -24,7 +24,7 @@ function toggleTheme() {
     <header class="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
       <div class="flex items-center gap-2">
         <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/20">
-          <img src="/brand/icon.svg" class="h-5 w-5" alt="" />
+          <img src="/brand/recloud-studio/icon.svg" class="h-5 w-5" alt="" />
         </div>
         <span class="text-lg font-bold tracking-tight">ReCloud <span class="text-primary-500">Studio</span></span>
       </div>

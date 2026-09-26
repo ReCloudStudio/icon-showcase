@@ -1,6 +1,6 @@
 # ReCloud 图标展示站
 
-Nuxt 4 画廊式站点，展示 ReCloud Studio 品牌图标（SVG 与多尺寸 PNG 下载、使用片段复制）。部署于 Cloudflare Pages。
+Nuxt 4 画廊式站点，展示 ReCloud 各项目/团队/组织的品牌图标（SVG 与多尺寸 PNG 下载、使用片段复制）。品牌由配置驱动，可扩展。部署于 Cloudflare Pages。
 
 ## 技术栈
 
@@ -11,10 +11,11 @@ Nuxt 4 画廊式站点，展示 ReCloud Studio 品牌图标（SVG 与多尺寸 P
 ## 目录结构（Nuxt 4 标准布局）
 
 - `app/app.vue`：页面壳层（页眉品牌与主题切换、页脚）。
-- `app/pages/index.vue`：主画廊（透明/浅/深背景切换、尺寸卡片、SVG 与字标下载、使用片段复制）。
+- `app/pages/index.vue`：主画廊（顶部品牌标签切换、透明/浅/深背景切换、尺寸卡片、SVG 与字标下载、使用片段复制）。
+- `app/data/brands.json`：品牌清单（每个品牌的来源仓库、图标/字标/额外资源路径）。**新增品牌改这里**。
 - `app/assets/css/main.css`：Tailwind 指令与棋盘格背景工具类。
-- `public/brand/`：图标资产（由 sync 拉取，勿手工编辑）。
-- `scripts/sync.mjs`：从 `ReCloudStudio/icon` 的 GitHub raw 拉取资产到 `public/brand/`。
+- `public/brand/<id>/`：按品牌分目录的图标资产（由 sync 拉取，勿手工编辑）。
+- `scripts/sync.mjs`：读取 `app/data/brands.json`，从各品牌来源仓库的 GitHub raw 拉取资产到 `public/brand/<id>/`。
 - `wrangler.jsonc`：Cloudflare Pages 配置（`pages_build_output_dir: dist`，无 `account_id`/`main`/`assets` 等 Worker 专属字段）。
 - `nuxt.config.ts` / `tailwind.config.ts` / `app.config.ts`：站点与样式配置（项目根）。
 
@@ -22,7 +23,7 @@ Nuxt 4 画廊式站点，展示 ReCloud Studio 品牌图标（SVG 与多尺寸 P
 
 - `bun install`：安装依赖。
 - `bun run dev`：本地开发 http://localhost:3000。
-- `bun run sync`：从上游 `ReCloudStudio/icon` 同步图标资产。
+- `bun run sync`：按 `app/data/brands.json` 从各上游仓库同步图标资产。
 - `bun run build`：先 `bun install` 再 `nuxt build`，产物在 `dist/`。
 - `bun run deploy`：直接上传（`wrangler pages deploy dist`）。
 
@@ -36,6 +37,7 @@ Nuxt 4 画廊式站点，展示 ReCloud Studio 品牌图标（SVG 与多尺寸 P
 ## 约定
 
 - 提交需 GPG 签名（`git commit -S`）。
-- `public/brand/` 由 `sync` 生成，勿手工提交图标文件；改图标请改 `ReCloudStudio/icon` 源仓库后重新 `sync`。
+- `public/brand/` 由 `sync` 生成，勿手工提交图标文件；改图标请改对应源仓库后重新 `sync`。
+- 新增品牌：在 `app/data/brands.json` 添加条目（`id`、`name`、`tagline`、`repo`、`icon`、`lockups`、`extras`），再 `bun run sync`。
 - 明暗主题强调色 `blue`、背景 `zinc`、深色 `#0a0a12`。
 - `wrangler.jsonc` 为 Pages 形态，不要加入 `account_id`/`main`/`assets` 等 Workers 专属字段。

@@ -9,22 +9,22 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'ReCloud Studio — 图标',
+      title: 'ReCloud — 图标库',
       meta: [
         {
           name: 'description',
-          content: 'ReCloud Studio 品牌图标：矢量 SVG 与多尺寸 PNG 下载。',
+          content: 'ReCloud 项目、团队与组织品牌图标：矢量 SVG 与多尺寸 PNG 下载。',
         },
-        { property: 'og:title', content: 'ReCloud Studio 图标' },
+        { property: 'og:title', content: 'ReCloud 图标库' },
         {
           property: 'og:description',
-          content: 'ReCloud Studio 品牌图标：矢量 SVG 与多尺寸 PNG 下载。',
+          content: 'ReCloud 项目、团队与组织品牌图标：矢量 SVG 与多尺寸 PNG 下载。',
         },
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: 'https://icon.worldexecute.me' },
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/brand/icon.svg' }],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/brand/recloud-studio/icon.svg' }],
     },
   },
   nitro: {
