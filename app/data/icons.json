@@ -46,6 +46,19 @@
           },
           "lockups": [],
           "extras": []
+        },
+        {
+          "id": "mailer",
+          "name": "Mailer",
+          "repo": "ReCloudStudio/icon",
+          "tagline": "邮件通知服务",
+          "icon": {
+            "source": "projects/mailer/icon.svg",
+            "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+            "sizeSource": "output/mailer/icon-{size}.png"
+          },
+          "lockups": [],
+          "extras": []
         }
       ]
     }
