@@ -63,7 +63,7 @@ function toggleTheme() {
           icon="i-heroicons-language"
           size="sm"
           variant="none"
-          class="w-28"
+          class="w-36"
           :ui="{
             rounded: 'rounded-full',
             base: 'rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800',
