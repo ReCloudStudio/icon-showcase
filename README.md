@@ -1,73 +1,108 @@
 # ReCloud Icon Showcase
 
-ReCloud 品牌图标的展示网站，画廊式预览多项目/团队/组织的多尺寸图标与 SVG 用法片段。品牌由 [`app/data/brands.json`](app/data/brands.json) 配置驱动。
+可 fork 的 Nuxt 4 图标展示站，支持按团队/组织聚合多个项目，展示 SVG、多尺寸 PNG、字标、额外资源与使用片段。
 
 ## 技术栈
 
-- [Nuxt 4](https://nuxt.com/) + [@nuxt/ui v2](https://ui.nuxt.com/)（Tailwind v3）
-- 明暗主题（`@nuxtjs/color-mode`），强调色 `blue`，背景 `zinc`
-- 部署目标：Cloudflare Pages（`cloudflare_pages` preset）
+- Nuxt 4 + @nuxt/ui v2（Tailwind v3）
+- 明暗主题（`@nuxtjs/color-mode`）
+- zod 配置校验
+- Cloudflare Pages（`cloudflare_pages` preset）
+- Bun
+
+## 配置
+
+站点身份配置位于项目根目录的 `site.config.ts`：
+
+```ts
+export const siteConfig = {
+  name: 'ReCloud Studio',
+  description: '品牌图标展示站',
+  logo: '/brand/recloud-studio/icon.svg',
+  accent: 'brand',
+  ogUrl: 'https://icon.worldexecute.me',
+  github: 'https://github.com/ReCloudStudio',
+  footer: 'ReCloud Studio',
+  defaultGroup: 'recloud',
+  links: [],
+}
+```
+
+图标数据位于 `app/data/icons.json`，使用 `groups` 对象聚合团队/组织：
+
+```json
+{
+  "groups": {
+    "acme": {
+      "name": "Acme Team",
+      "url": "https://github.com/acme",
+      "logo": true,
+      "brands": [
+        {
+          "id": "acme-api",
+          "name": "Acme API",
+          "repo": "acme/api",
+          "url": "https://api.acme.example",
+          "tagline": "API service",
+          "icon": { "source": "assets/icon.svg", "sizes": [] },
+          "lockups": [],
+          "extras": []
+        }
+      ]
+    },
+    "another-team": {
+      "name": "Another Team",
+      "brands": []
+    }
+  }
+}
+```
+
+品牌资源默认从 `repo` 的 GitHub 仓库同步，也可以使用本地资源：
+
+```json
+{ "source": { "type": "local", "path": "brand/acme/icon.svg" }, "sizes": [] }
+```
+
+完整字段和 fork 流程见 [`FORKING.md`](FORKING.md)。
 
 ## 同步图标
 
-图标按品牌从各自 GitHub 仓库拉取，来源与资源路径在 [`app/data/brands.json`](app/data/brands.json) 中声明：
-
 ```bash
-bun run sync        # 按配置下载各品牌资产到 public/brand/<id>/
+bun run sync
 ```
 
-当前品牌：
-
-- `recloud-studio`（[ReCloudStudio/icon](https://github.com/ReCloudStudio/icon)）：`icon`（纯图标）、`icon-text`（ReCloud 横排字标）、`icon-text-studio`（ReCloud Studio 横排字标）。
-- `webhooker`（[ReCloudStudio/WebHooker](https://github.com/ReCloudStudio/WebHooker)）：`logo.svg`（图标）与 `favicon.svg`。
-
-### 新增品牌
-
-在 `app/data/brands.json` 的 `brands` 数组追加条目后运行 `bun run sync`：
-
-- `id`：品牌 slug，决定 `public/brand/<id>/` 目录。
-- `name` / `tagline`：页面展示名称与一句话说明。
-- `repo`：`{ owner, name, branch }` 来源仓库。
-- `icon`：主图标 `{ source, sizes, sizeSource }`；`sizeSource` 用 `{size}` 占位，如 `output/icon-{size}.png`，无多尺寸时 `sizes: []`。
-- `lockups`：横排字标数组，结构与 `icon` 类似，另含 `id`。
-- `extras`：其他资源数组 `{ id, name, source }`（如 favicon）。
-
-页面预览支持切换透明 / 浅色 / 深色背景；「带背景」下载按钮会将当前背景色（白 `#ffffff` 或深 `#0a0a12`）合成到图标后导出 PNG。
+同步脚本会先校验 `site.config.ts` 与 `app/data/icons.json`，再将 GitHub 资源写入 `public/brand/<id>/`；本地资源不会被覆盖。
 
 ## 本地开发
 
 ```bash
 bun install
-bun run dev         # http://localhost:3000
-bun run build       # 产出 dist/
+bun run dev
+bun run build
 ```
 
 ## 部署
 
 ```bash
 bunx wrangler login
-bun run deploy      # 推送到 Cloudflare Pages，自定义域 icon.worldexecute.me
+bun run deploy
 ```
+
+Cloudflare Pages 构建命令为 `bun run build`，输出目录为 `dist`。
 
 ## 目录结构
 
-采用 Nuxt 4 标准布局（`app/` 为源码根目录）：
+- `site.config.ts`：站点名称、描述、Logo、强调色、链接与默认分组。
+- `app/data/icons.json`：分组与品牌图标资源清单。
+- `app/pages/index.vue`：分组标签与品牌卡片网格。
+- `app/components/BrandCard.vue`：品牌卡片。
+- `app/components/BrandDrawer.vue`：品牌详情抽屉、预览、下载与代码片段。
+- `app/composables/`：站点配置、背景、图标与下载逻辑。
+- `shared/`：zod schema、强调色与资源路径工具。
+- `public/brand/<id>/`：同步生成的品牌资源。
+- `scripts/sync.mjs`：校验并同步远程品牌资源。
 
-- `app/app.vue`：页面壳层（页眉主题切换、页脚）
-- `app/pages/index.vue`：主画廊（顶部品牌标签切换、背景切换、尺寸卡片、SVG 下载/复制）
-- `app/data/brands.json`：品牌清单（来源仓库与资源路径）
-- `app/assets/css/main.css`：Tailwind 指令与棋盘格背景工具类
-- `public/brand/<id>/`：同步而来的图标资源（构建时不被打包）
-- `scripts/sync.mjs`：按品牌配置同步图标资源
-- `wrangler.jsonc` / `nuxt.config.ts`：部署与站点配置
-- `app.config.ts` / `tailwind.config.ts`：UI 主题与样式配置（项目根）
+## 许可
 
-## 使用规范
-
-### 源代码
-
-源代码部分使用 AGPL-3.0 许可证，详见 [LICENSE](LICENSE)。
-
-### 图标资源
-
-图标资源部分使用参见 [品牌使用规范](https://docs.worldexecute.me/brand/brand-guidelines/)
+源代码使用 AGPL-3.0，详见 [LICENSE](LICENSE)。图标资源遵循各品牌自己的使用规范。

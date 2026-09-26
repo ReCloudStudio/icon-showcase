@@ -1,3 +1,10 @@
+import { iconsConfigSchema, siteConfigSchema } from './shared/schema'
+import { siteConfig } from './site.config'
+import iconsData from './app/data/icons.json'
+
+const site = siteConfigSchema.parse(siteConfig)
+iconsConfigSchema.parse(iconsData)
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-27',
   modules: ['@nuxt/ui'],
@@ -9,22 +16,16 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'ReCloud — 图标库',
+      title: `${site.name} — 图标库`,
       meta: [
-        {
-          name: 'description',
-          content: 'ReCloud 项目、团队与组织品牌图标：矢量 SVG 与多尺寸 PNG 下载。',
-        },
-        { property: 'og:title', content: 'ReCloud 图标库' },
-        {
-          property: 'og:description',
-          content: 'ReCloud 项目、团队与组织品牌图标：矢量 SVG 与多尺寸 PNG 下载。',
-        },
+        { name: 'description', content: site.description },
+        { property: 'og:title', content: `${site.name} 图标库` },
+        { property: 'og:description', content: site.description },
         { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: 'https://icon.worldexecute.me' },
+        { property: 'og:url', content: site.ogUrl },
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/brand/recloud-studio/icon.svg' }],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: site.logo }],
     },
   },
   nitro: {

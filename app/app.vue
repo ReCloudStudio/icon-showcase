@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import { ACCENT_COLORS } from '~~/shared/accents'
+
 const colorMode = useColorMode()
+const siteConfig = useSiteConfig()
+
+const siteAccentColor = computed(() => ACCENT_COLORS[siteConfig.accent])
 
 function toggleTheme() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
@@ -7,7 +12,10 @@ function toggleTheme() {
 </script>
 
 <template>
-  <div class="relative min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-[#0a0a12] dark:text-white">
+  <div
+    class="relative flex min-h-screen flex-col bg-zinc-50 font-sans text-zinc-900 dark:bg-[#0a0a12] dark:text-white"
+    :style="{ '--site-accent': siteAccentColor }"
+  >
     <div class="pointer-events-none fixed inset-0 z-0">
       <div class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[length:64px_64px] dark:bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)]" />
       <div class="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary-500/10 blur-[128px]" />
@@ -21,22 +29,14 @@ function toggleTheme() {
       跳到主内容
     </a>
 
-    <header class="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <header class="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-6">
       <div class="flex items-center gap-2">
         <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/20">
-          <img src="/brand/recloud-studio/icon.svg" class="h-5 w-5" alt="" />
+          <img :src="siteConfig.logo" class="h-5 w-5" alt="" />
         </div>
-        <span class="text-lg font-bold tracking-tight">ReCloud <span class="text-primary-500">Studio</span></span>
+        <span class="text-lg font-bold tracking-tight">{{ siteConfig.name }}</span>
       </div>
-      <div class="flex items-center gap-4">
-        <a
-          href="https://github.com/recloudstudio"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-sm text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-white"
-        >
-          GitHub
-        </a>
+      <div class="flex items-center gap-3">
         <button
           class="rounded-full p-2 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-800"
           :aria-label="colorMode.value === 'dark' ? '切换到浅色' : '切换到深色'"
@@ -53,15 +53,15 @@ function toggleTheme() {
       </div>
     </header>
 
-    <main id="main" class="relative z-10">
+    <main id="main" class="relative z-10 flex-1">
       <NuxtPage />
     </main>
 
     <footer class="relative z-10 border-t border-zinc-200 px-6 py-12 dark:border-zinc-900">
       <div class="mx-auto flex max-w-6xl flex-col items-center gap-4 text-xs text-zinc-500 dark:text-zinc-700 sm:flex-row sm:justify-between">
-        <div>&copy; {{ new Date().getFullYear() }} ReCloud Studio. 保留所有权利。</div>
+        <div>&copy; {{ new Date().getFullYear() }} {{ siteConfig.footer }}. 保留所有权利。</div>
         <a
-          href="https://github.com/recloudstudio"
+          :href="siteConfig.github"
           target="_blank"
           rel="noopener noreferrer"
           class="transition-colors hover:text-zinc-900 dark:hover:text-white"
@@ -79,16 +79,16 @@ function toggleTheme() {
 }
 
 ::selection {
-  background-color: rgba(48, 105, 201, 0.25);
+  background-color: color-mix(in srgb, var(--site-accent, #3069c9) 25%, transparent);
   color: inherit;
 }
 
 .dark ::selection {
-  background-color: rgba(48, 105, 201, 0.35);
+  background-color: color-mix(in srgb, var(--site-accent, #3069c9) 35%, transparent);
 }
 
 *:focus-visible {
-  outline: 2px solid rgb(48 105 201);
+  outline: 2px solid var(--site-accent, #3069c9);
   outline-offset: 2px;
   border-radius: 4px;
 }

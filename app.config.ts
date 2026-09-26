@@ -1,6 +1,8 @@
+import { siteConfig } from './site.config'
+
 export default defineAppConfig({
   ui: {
-    primary: 'brand',
-    gray: 'zinc'
-  }
+    primary: siteConfig.accent,
+    gray: 'zinc',
+  },
 })

@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@nuxt/ui": "^2.21.0",
-    "nuxt": "^4.4.8"
+    "nuxt": "^4.4.8",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",

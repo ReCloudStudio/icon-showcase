@@ -1,0 +1,54 @@
+{
+  "groups": {
+    "recloud": {
+      "name": "ReCloud",
+      "url": "https://github.com/ReCloudStudio",
+      "description": "ReCloud 团队的项目与品牌",
+      "logo": true,
+      "brands": [
+        {
+          "id": "recloud-studio",
+          "name": "ReCloud Studio",
+          "repo": "ReCloudStudio/icon",
+          "tagline": "品牌主图标与横排字标",
+          "icon": {
+            "source": "icon.svg",
+            "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+            "sizeSource": "output/icon-{size}.png"
+          },
+          "lockups": [
+            {
+              "id": "icon-text",
+              "name": "ReCloud",
+              "source": "icon-text.svg",
+              "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+              "sizeSource": "output/icon-text-{size}.png"
+            },
+            {
+              "id": "icon-text-studio",
+              "name": "ReCloud Studio",
+              "source": "icon-text-studio.svg",
+              "sizes": [16, 32, 48, 64, 96, 128, 256, 512],
+              "sizeSource": "output/icon-text-studio-{size}.png"
+            }
+          ],
+          "extras": []
+        },
+        {
+          "id": "webhooker",
+          "name": "WebHooker",
+          "repo": "ReCloudStudio/WebHooker",
+          "tagline": "Webhook 分发服务",
+          "icon": {
+            "source": "public/logo.svg",
+            "sizes": []
+          },
+          "lockups": [],
+          "extras": [
+            { "id": "favicon", "name": "Favicon", "source": "public/favicon.svg" }
+          ]
+        }
+      ]
+    }
+  }
+}

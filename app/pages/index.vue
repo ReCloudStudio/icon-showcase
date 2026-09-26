@@ -1,285 +1,87 @@
 <script setup lang="ts">
-import brandsData from '~/data/brands.json'
+import type { Brand } from '~~/shared/schema'
+import { publicUrl } from '~~/shared/assets'
 
-interface Lockup {
-  id: string
-  name: string
-  source: string
-  sizes: number[]
-  sizeSource: string | null
-}
-interface Extra {
-  id: string
-  name: string
-  source: string
-}
-interface Brand {
-  id: string
-  name: string
-  tagline: string
-  repo: { owner: string; name: string; branch: string }
-  icon: { source: string; sizes: number[]; sizeSource: string | null }
-  lockups: Lockup[]
-  extras: Extra[]
-}
+const siteConfig = useSiteConfig()
+const { groups } = useIcons()
 
-const brands = brandsData.brands as Brand[]
-const active = ref(brands[0]!.id)
-const brand = computed(() => brands.find((b) => b.id === active.value) ?? brands[0]!)
-
-const bg = ref<'checker' | 'light' | 'dark'>('checker')
-const bgOptions = [
-  { key: 'checker', label: '透明' },
-  { key: 'light', label: '浅色' },
-  { key: 'dark', label: '深色' },
-] as const
-
-const bgClass = computed(() => {
-  if (bg.value === 'light') return 'bg-white'
-  if (bg.value === 'dark') return 'bg-zinc-900'
-  return 'checkerboard'
-})
-
-const bgColor = computed(() => {
-  if (bg.value === 'light') return '#ffffff'
-  if (bg.value === 'dark') return '#0a0a12'
-  return null
-})
-
-function ext(path: string) {
-  return path.slice(path.lastIndexOf('.'))
-}
-
-const iconSrc = computed(() => `/brand/${brand.value.id}/icon${ext(brand.value.icon.source)}`)
-const iconPng256 = computed(() =>
-  brand.value.icon.sizes.includes(256) ? `/brand/${brand.value.id}/icon-256.png` : null,
+const groupIds = Object.keys(groups)
+const activeGroupId = ref(
+  groupIds.includes(siteConfig.defaultGroup) ? siteConfig.defaultGroup : groupIds[0]!,
 )
+const activeGroup = computed(() => groups[activeGroupId.value]!)
 
-const snippet = computed(() => {
-  const b = brand.value
-  const src = iconSrc.value
-  const png = iconPng256.value ?? src
-  return `<!-- ${b.name} 图标 -->
-<picture>
-  <source srcset="${src}" type="image/svg+xml" />
-  <img src="${png}" alt="${b.name}" width="256" height="256" />
-</picture>`
-})
-
-watch(active, () => (copied.value = false))
-
-function download(href: string, name: string) {
-  if (!bgColor.value) {
-    const a = document.createElement('a')
-    a.href = href
-    a.download = name
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    return
-  }
-  const img = new Image()
-  img.crossOrigin = 'anonymous'
-  img.src = href
-  img.onload = () => {
-    const canvas = document.createElement('canvas')
-    canvas.width = img.naturalWidth
-    canvas.height = img.naturalHeight
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.fillStyle = bgColor.value
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(img, 0, 0)
-    const a = document.createElement('a')
-    a.href = canvas.toDataURL('image/png')
-    a.download = name.replace(/\.(png|svg)$/i, '-bg.png')
-    a.click()
-    a.remove()
-  }
+function groupLogoFor(gid: string) {
+  const group = groups[gid]
+  if (!group?.logo) return null
+  if (typeof group.logo === 'object') return `/${group.logo.path}`
+  const first = group.brands[0]
+  return first ? publicUrl(first.id, 'icon', 'icon', first.icon.source) : null
 }
 
-const copied = ref(false)
-async function copySnippet(text: string = snippet.value) {
-  try {
-    await navigator.clipboard.writeText(text)
-    copied.value = true
-    setTimeout(() => (copied.value = false), 1500)
-  } catch {
-    copied.value = false
-  }
+const tabs = groupIds.map((id) => ({
+  id,
+  name: groups[id]!.name,
+  logo: groupLogoFor(id),
+}))
+
+const selected = ref<Brand | null>(null)
+const drawerOpen = ref(false)
+
+function selectBrand(brand: Brand) {
+  selected.value = brand
+  drawerOpen.value = true
 }
 </script>
 
 <template>
   <UContainer class="py-12">
     <div class="mb-8 text-center">
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">图标库</h1>
-      <p class="mt-3 text-zinc-500 dark:text-zinc-400">
-        ReCloud 项目、团队与组织品牌标识的矢量与位图资源，自由下载使用。
-      </p>
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ siteConfig.name }} 图标库</h1>
+      <p class="mt-3 text-zinc-500 dark:text-zinc-400">{{ siteConfig.description }}</p>
     </div>
 
     <div class="mb-8 flex flex-wrap gap-1 border-b border-zinc-200 dark:border-zinc-800">
       <button
-        v-for="b in brands"
-        :key="b.id"
+        v-for="t in tabs"
+        :key="t.id"
         type="button"
         class="-mb-px flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors"
         :class="
-          active === b.id
+          activeGroupId === t.id
             ? 'border-primary-500 text-primary-500'
             : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
         "
-        @click="active = b.id"
+        @click="activeGroupId = t.id"
       >
-        <img :src="`/brand/${b.id}/icon.svg`" class="h-5 w-5" alt="" />
-        {{ b.name }}
+        <img v-if="t.logo" :src="t.logo" class="h-5 w-5" alt="" />
+        {{ t.name }}
       </button>
     </div>
 
-    <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
+    <div class="mb-6 flex flex-wrap items-baseline justify-between gap-2">
       <div>
-        <h2 class="text-xl font-semibold">{{ brand.name }}</h2>
-        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ brand.tagline }}</p>
-        <a
-          :href="`https://github.com/${brand.repo.owner}/${brand.repo.name}`"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="mt-1 inline-block text-xs text-primary-500 hover:underline"
-        >
-          {{ brand.repo.owner }}/{{ brand.repo.name }}
-        </a>
+        <h2 class="text-xl font-semibold">{{ activeGroup.name }}</h2>
+        <p v-if="activeGroup.description" class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          {{ activeGroup.description }}
+        </p>
       </div>
-      <UButtonGroup size="sm">
-        <UButton
-          v-for="opt in bgOptions"
-          :key="opt.key"
-          :variant="bg === opt.key ? 'solid' : 'soft'"
-          @click="bg = opt.key"
-        >
-          {{ opt.label }}
-        </UButton>
-      </UButtonGroup>
+      <a
+        v-if="activeGroup.url"
+        :href="activeGroup.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-xs text-primary-500 hover:underline"
+      >
+        {{ activeGroup.url }}
+      </a>
     </div>
 
-    <UCard class="mb-10">
-      <template #header>
-        <span class="font-medium">主预览</span>
-      </template>
-      <div class="flex items-center justify-center py-8">
-        <div :class="[bgClass, 'flex h-64 w-64 items-center justify-center rounded-2xl']">
-          <img :src="iconSrc" class="h-44 w-44" :alt="`${brand.name} 图标`" />
-        </div>
-      </div>
-    </UCard>
+    <div v-if="activeGroup.brands.length" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <BrandCard v-for="b in activeGroup.brands" :key="b.id" :brand="b" @select="selectBrand" />
+    </div>
+    <p v-else class="py-16 text-center text-sm text-zinc-500">该分组暂无品牌。</p>
 
-    <template v-if="brand.icon.sizes.length">
-      <h3 class="mb-4 text-lg font-semibold">尺寸</h3>
-      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        <UCard v-for="s in brand.icon.sizes" :key="s">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="font-medium">{{ s }}×{{ s }}</span>
-              <span class="text-xs text-zinc-400">PNG</span>
-            </div>
-          </template>
-          <div class="flex h-32 items-center justify-center" :class="bgClass">
-            <img
-              :src="`/brand/${brand.id}/icon-${s}.png`"
-              :alt="`icon-${s}`"
-              :width="Math.min(s, 96)"
-              :height="Math.min(s, 96)"
-              class="max-h-24 max-w-24 object-contain"
-            />
-          </div>
-          <template #footer>
-            <UButton
-              block
-              size="xs"
-              variant="soft"
-              @click="download(`/brand/${brand.id}/icon-${s}.png`, `icon-${s}.png`)"
-            >
-              下载
-            </UButton>
-          </template>
-        </UCard>
-      </div>
-    </template>
-
-    <UCard class="mt-10">
-      <template #header>
-        <span class="font-medium">矢量 SVG</span>
-      </template>
-      <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
-        <div class="flex h-32 w-32 shrink-0 items-center justify-center rounded-xl" :class="bgClass">
-          <img :src="iconSrc" class="h-20 w-20" :alt="`${brand.name} 图标`" />
-        </div>
-        <div class="flex flex-col gap-3">
-          <UButton variant="soft" @click="download(iconSrc, `icon${ext(brand.icon.source)}`)">
-            下载 SVG
-          </UButton>
-          <UButton variant="ghost" size="xs" @click="copySnippet()">
-            {{ copied ? '已复制' : '复制使用代码' }}
-          </UButton>
-        </div>
-        <pre class="mt-0 flex-1 overflow-x-auto rounded-lg bg-zinc-100 p-4 text-xs dark:bg-zinc-800"><code>{{ snippet }}</code></pre>
-      </div>
-    </UCard>
-
-    <template v-if="brand.lockups.length">
-      <h3 class="mb-4 mt-10 text-lg font-semibold">带文字图标</h3>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UCard v-for="l in brand.lockups" :key="l.id">
-          <template #header>
-            <span class="font-medium">{{ l.name }}</span>
-          </template>
-          <div class="flex h-40 items-center justify-center overflow-hidden rounded-xl" :class="bgClass">
-            <img
-              :src="`/brand/${brand.id}/${l.id}${ext(l.source)}`"
-              class="max-h-28 w-auto"
-              :alt="l.name"
-            />
-          </div>
-          <template #footer>
-            <UButton
-              block
-              size="xs"
-              variant="soft"
-              @click="download(`/brand/${brand.id}/${l.id}${ext(l.source)}`, `${l.id}${ext(l.source)}`)"
-            >
-              下载 SVG
-            </UButton>
-          </template>
-        </UCard>
-      </div>
-    </template>
-
-    <template v-if="brand.extras.length">
-      <h3 class="mb-4 mt-10 text-lg font-semibold">其他资源</h3>
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        <UCard v-for="e in brand.extras" :key="e.id">
-          <template #header>
-            <span class="font-medium">{{ e.name }}</span>
-          </template>
-          <div class="flex h-32 items-center justify-center rounded-xl" :class="bgClass">
-            <img
-              :src="`/brand/${brand.id}/${e.id}${ext(e.source)}`"
-              class="max-h-20 w-auto"
-              :alt="e.name"
-            />
-          </div>
-          <template #footer>
-            <UButton
-              block
-              size="xs"
-              variant="soft"
-              @click="download(`/brand/${brand.id}/${e.id}${ext(e.source)}`, `${e.id}${ext(e.source)}`)"
-            >
-              下载
-            </UButton>
-          </template>
-        </UCard>
-      </div>
-    </template>
+    <BrandDrawer v-model="drawerOpen" :brand="selected" />
   </UContainer>
 </template>

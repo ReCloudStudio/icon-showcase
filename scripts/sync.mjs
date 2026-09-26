@@ -1,63 +1,64 @@
 import { writeFileSync, mkdirSync, readFileSync, rmSync } from 'node:fs'
-import { dirname, resolve, extname } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { iconsConfigSchema } from '../shared/schema.ts'
+import { localName } from '../shared/assets.ts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const dest = resolve(root, 'public/brand')
 
-const { brands } = JSON.parse(readFileSync(resolve(root, 'app/data/brands.json'), 'utf8'))
+const config = iconsConfigSchema.parse(
+  JSON.parse(readFileSync(resolve(root, 'app/data/icons.json'), 'utf8')),
+)
 
-const raw = (owner, name, branch) => `https://raw.githubusercontent.com/${owner}/${name}/${branch}`
+function rawUrl(repo, ref, path) {
+  return `https://raw.githubusercontent.com/${repo}/${ref ?? 'HEAD'}/${path}`
+}
 
-function collect(brand) {
-  const base = raw(brand.repo.owner, brand.repo.name, brand.repo.branch)
-  const files = []
-  const push = (url, name) => files.push({ url: `${base}/${url}`, name: `${brand.id}/${name}` })
+const jobs = []
 
-  if (brand.icon) {
-    push(brand.icon.source, `icon${extname(brand.icon.source)}`)
-    for (const size of brand.icon.sizes ?? []) {
-      if (brand.icon.sizeSource) {
-        push(brand.icon.sizeSource.replace('{size}', size), `icon-${size}.png`)
-      }
+for (const group of Object.values(config.groups)) {
+  for (const brand of group.brands) {
+    const push = (source, kind, id, size) => {
+      if (typeof source !== 'string') return
+      const path = size === undefined ? source : source.replace('{size}', String(size))
+      jobs.push({
+        url: rawUrl(brand.repo, brand.ref, path),
+        name: `${brand.id}/${localName(kind, id, source, size)}`,
+      })
     }
-  }
 
-  for (const lockup of brand.lockups ?? []) {
-    push(lockup.source, `${lockup.id}${extname(lockup.source)}`)
-    for (const size of lockup.sizes ?? []) {
+    push(brand.icon.source, 'icon', 'icon')
+    if (brand.icon.sizeSource) {
+      for (const size of brand.icon.sizes) push(brand.icon.sizeSource, 'icon', 'icon', size)
+    }
+    for (const lockup of brand.lockups) {
+      push(lockup.source, 'lockup', lockup.id)
       if (lockup.sizeSource) {
-        push(lockup.sizeSource.replace('{size}', size), `${lockup.id}-${size}.png`)
+        for (const size of lockup.sizes) push(lockup.sizeSource, 'lockup', lockup.id, size)
       }
     }
+    for (const extra of brand.extras) push(extra.source, 'extra', extra.id)
   }
-
-  for (const extra of brand.extras ?? []) {
-    push(extra.source, `${extra.id}${extname(extra.source)}`)
-  }
-
-  return files
 }
 
 rmSync(dest, { recursive: true, force: true })
 mkdirSync(dest, { recursive: true })
 
-const files = brands.flatMap(collect)
-
 let ok = 0
-for (const f of files) {
-  const target = resolve(dest, f.name)
+for (const job of jobs) {
+  const target = resolve(dest, job.name)
   mkdirSync(dirname(target), { recursive: true })
-  const res = await fetch(f.url)
+  const res = await fetch(job.url)
   if (!res.ok) {
-    console.error(`下载失败 ${f.url}: ${res.status}`)
+    console.error(`下载失败 ${job.url}: ${res.status}`)
     process.exitCode = 1
     continue
   }
   const buf = Buffer.from(await res.arrayBuffer())
   writeFileSync(target, buf)
   ok++
-  console.log(`✓ ${f.name} (${buf.length} bytes)`)
+  console.log(`✓ ${job.name} (${buf.length} bytes)`)
 }
 
-console.log(`已同步 ${ok}/${files.length} 个图标文件到 public/brand/`)
+console.log(`已同步 ${ok}/${jobs.length} 个图标文件到 public/brand/`)
