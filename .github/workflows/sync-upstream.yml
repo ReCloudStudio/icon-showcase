@@ -1,0 +1,81 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository != 'ReCloudStudio/icon-showcase'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.3
+
+      - name: Merge upstream, keep local config
+        env:
+          UPSTREAM: ${{ vars.UPSTREAM_REPO || 'ReCloudStudio/icon-showcase' }}
+          UPSTREAM_BRANCH: ${{ vars.UPSTREAM_BRANCH || 'main' }}
+          PROTECTED: ${{ vars.PROTECTED_PATHS || 'site.config.ts app/data/icons.json public/brand' }}
+        run: |
+          set -euo pipefail
+
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          base="$(git rev-parse HEAD)"
+          git remote add upstream "https://github.com/${UPSTREAM}.git" 2>/dev/null \
+            || git remote set-url upstream "https://github.com/${UPSTREAM}.git"
+          git fetch --no-tags upstream "$UPSTREAM_BRANCH"
+
+          if git merge-base --is-ancestor upstream/"$UPSTREAM_BRANCH" HEAD; then
+            echo '已是最新的上游版本，无需更新。'
+            exit 0
+          fi
+
+          git merge --no-commit --no-ff -X theirs upstream/"$UPSTREAM_BRANCH" || true
+
+          if [ -n "$(git ls-files -u)" ]; then
+            git merge --abort || true
+            echo '::error::上游合并存在无法自动解决的冲突，请手动同步。'
+            exit 1
+          fi
+
+          for path in $PROTECTED; do
+            git rm -r -f --quiet --ignore-unmatch -- "$path"
+            if git cat-file -e "${base}:${path}" 2>/dev/null; then
+              git checkout "$base" -- "$path"
+            fi
+          done
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            git merge --abort || true
+            echo '合并后无实际变更。'
+            exit 0
+          fi
+
+          git commit -m "chore: sync upstream ${UPSTREAM}"
+
+      - name: Validate build
+        run: bun run build
+
+      - name: Push
+        run: git push

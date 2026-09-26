@@ -23,6 +23,7 @@ Nuxt 4 可 fork 图标展示站，支持按团队/组织聚合多个项目。默
 - `shared/assets.ts`：GitHub/本地资源路径解析。
 - `public/brand/<id>/`：按品牌分目录的同步资源。
 - `scripts/sync.mjs`：校验并同步 GitHub 资源，本地资源跳过下载。
+- `.github/workflows/sync-upstream.yml`：Fork 用户合并上游更新并保留本地配置。
 - `FORKING.md`：fork、改配置、同步资源与部署说明。
 
 ## 常用命令

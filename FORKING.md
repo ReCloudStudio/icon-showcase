@@ -102,7 +102,29 @@ bunx wrangler login
 bun run deploy
 ```
 
-## 6. 移除 ReCloud 示例
+## 6. 同步上游更新
+
+仓库内置 `.github/workflows/sync-upstream.yml`，用于把上游的新功能与修复合并到你的 fork，同时保留你自己的 `site.config.ts`、`app/data/icons.json` 与 `public/brand/` 等配置。相比 GitHub 内置的 Sync fork，它不会覆盖你的配置，也不会产生需要手动解决的冲突。
+
+使用方式：
+
+1. 在 fork 仓库的 Actions 页面启用 workflow（fork 首次需要手动启用）。
+2. 需要更新时，手动运行 “Sync upstream”（也可等待每周一自动运行）。
+3. workflow 会合并上游、还原受保护文件、执行 `bun run build` 校验，全部通过后再提交并推送。
+
+默认行为可通过仓库 Variables（Settings → Secrets and variables → Actions → Variables）调整：
+
+- `UPSTREAM_REPO`：上游仓库，默认 `ReCloudStudio/icon-showcase`。
+- `UPSTREAM_BRANCH`：上游分支，默认 `main`。
+- `PROTECTED_PATHS`：合并时保留的本地路径，默认 `site.config.ts app/data/icons.json public/brand`；如需保留自定义文案，可追加 `i18n/locales`。
+
+注意：
+
+- workflow 使用 `-X theirs` 让上游代码优先，仅在受保护路径上强制保留本地版本。若你在受保护路径之外也做了修改，合并时可能被上游覆盖。
+- 若上游改动导致 `bun run build` 校验失败，workflow 会中止且不推送，便于你手动处理。
+- 若 fork 的默认分支开启了分支保护，`git push` 可能被拒绝，可放宽保护或改为在 workflow 中走 PR。
+
+## 7. 移除 ReCloud 示例
 
 完成自己的配置后，检查并替换：
 
